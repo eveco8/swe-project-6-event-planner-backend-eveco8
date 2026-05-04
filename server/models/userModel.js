@@ -17,7 +17,7 @@ module.exports.findUserByUsername = async (username) => {
 
 module.exports.create = async (username, password) => {
     const password_hash = await bcrypt.hash(password, SALT_ROUNDS);
-    const query = 'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;';
+    const query = 'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING *;';
     const { rows } = await pool.query(query, [username, password_hash]);
     return rows[0] || null;
 };
@@ -28,14 +28,14 @@ module.exports.validatePassword = async (username, password) => {
     const user = rows[0]
     if(!user) return null;
 
-    const isValid = await bcrypt.compare(password, user.password);
+    const isValid = await bcrypt.compare(password, user.password_hash);
     if (!isValid) return null;
     return {user_id: user.user_id, username: user.username};
 };
 
 module.exports.update = async (user_id, password) => {
     const password_hash = await bcrypt.hash(password, SALT_ROUNDS);
-    const query = 'UPDATE users SET password = $1 WHERE user_id = $2 RETURNING user_id, username;';
+    const query = 'UPDATE users SET password_hash = $1 WHERE user_id = $2 RETURNING user_id, username;';
     const { rows } = await pool.query(query, [password_hash, user_id]);
     return rows[0] || null;
 };

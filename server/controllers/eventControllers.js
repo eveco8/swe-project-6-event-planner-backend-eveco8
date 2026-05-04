@@ -15,11 +15,11 @@ const createEvent = async (req, res, next) => {
 
         const { title, description, date, location, event_type, max_capacity } = req.body;
 
-        if(!title || !description || !date || !location || !eventsArr.includes(event_type.toLowerCase()) || !max_capacity) {
+        if(!title || !description || !date || !location || !event_type || !eventsArr.includes(event_type.toLowerCase()) || !max_capacity) {
             return res.status(400).send({error: 'Missing required fields or invalid event_type'});
         };
 
-        const event = await eventModel.create(title, description, date, location, event_type, max_capacity);
+        const event = await eventModel.create(title, description, date, location, event_type, max_capacity, req.session.userId);
 
         res.status(201).send(event);
     } catch (err) {

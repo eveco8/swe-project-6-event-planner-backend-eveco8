@@ -8,13 +8,13 @@ const updateUser = async (req, res, next) => {
             return res.status(403).send({ message: 'Trying to update a different user'})
         }
 
-        const { password } = req.body;
+        const { password_hash } = req.body;
 
-        if (!password) {
+        if (!password_hash) {
             return res.status(400).send({error: 'Missing password'});
         };
 
-        const user = await userModel.update(userId, password);
+        const user = await userModel.update(userId, password_hash);
 
         if (!user) return res.status(404).send({ message: 'User not found'});
         res.send(user);

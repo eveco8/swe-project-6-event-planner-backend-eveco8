@@ -13,7 +13,14 @@ module.exports.destroy = async (user_id, event_id) => {
 };
 
 module.exports.list = async (user_id) => {
-    const query = `SELECT events.*, users.username FROM events INNER JOIN users ON events.user_id = users.user_id INNER JOIN rsvps ON users.user_id = rsvps.user_id WHERE rsvps.user_id = $1;`
+    const query = `SELECT events.*, users.username, COUNT(rsvps.rsvp_id) AS rsvp_count  
+    FROM rsvps AS user_rsvps
+    INNER JOIN events ON user_rsvps.event_id = events.event_id
+    INNER JOIN users ON events.user_id = users.user_id
+    LEFT JOIN rsvps ON events.event_id = rsvps.event_id
+    WHERE user_rsvps.user_id = $1
+    GROUP BY events.event_id, users.username
+    ORDER BY events.date ASC;`
     const { rows } = await pool.query(query, [user_id]);
     return rows;
 };

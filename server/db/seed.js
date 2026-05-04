@@ -12,7 +12,7 @@ const seed = async () => {
         CREATE TABLE users (
         user_id         SERIAL  PRIMARY KEY,
         username        TEXT    NOT NULL  UNIQUE,
-        password   TEXT    NOT NULL
+        password_hash   TEXT    NOT NULL
         )
         `);
     
@@ -42,7 +42,7 @@ const seed = async () => {
     const evelinHash = await bcrypt.hash('iliketurtles', SALT_ROUNDS);
     const luigiHash = await bcrypt.hash('mario123', SALT_ROUNDS);
 
-    const insertUserSql = 'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING user_id'
+    const insertUserSql = 'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING user_id'
 
     const markResponse = await pool.query(insertUserSql, ['mark', markHash]);
     const evelinResponse = await pool.query(insertUserSql, ['evelin', evelinHash]);
